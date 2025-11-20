@@ -12,7 +12,8 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: 'http://localhost:3000', // React frontend
+  origin: ['http://localhost:3000', 
+  'https://frontend-9c7bhimao-karthip-js-projects.vercel.app'],// React frontend
   credentials: true
 }));
 
