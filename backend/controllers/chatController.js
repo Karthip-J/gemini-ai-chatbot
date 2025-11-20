@@ -16,19 +16,10 @@ exports.getChats = async (req, res) => {
 
 
 exports.createChat = async (req, res) => {
-  console.log("🔍 [DEBUG] Create chat called");
-  console.log("User:", req.user);
-  console.log("Body:", req.body);
-
   try {
-    // Count how many chats this user already has
+    // Count chats per user
     const chatCount = await Chat.countDocuments({ user: req.user._id });
-
-    // Auto-generate title like "Chat 1", "Chat 2", etc.
-    const defaultTitle = `Chat ${chatCount + 1}`;
-
-    // Use the provided title if sent, otherwise use auto one
-    const { title = defaultTitle } = req.body || {};
+    const title = `Chat ${chatCount + 1}`;
 
     const chat = await Chat.create({
       title,
@@ -36,7 +27,6 @@ exports.createChat = async (req, res) => {
       messages: [],
     });
 
-    console.log(`✅ Created: ${chat.title}`);
     res.status(201).json(chat);
   } catch (error) {
     console.error("❌ Chat creation failed:", error);
@@ -54,11 +44,27 @@ exports.getChatById = async (req, res) => {
 };
 
 // Delete chat by ID
+// Delete chat by ID
 exports.deleteChat = async (req, res) => {
-  const chat = await Chat.findById(req.params.id);
-  if (!chat) return res.status(404).json({ message: 'Chat not found' });
-  if (chat.user.toString() !== req.user._id.toString()) return res.status(401).json({ message: 'Not authorized' });
+  try {
+    const chat = await Chat.findById(req.params.id);
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
 
-  await chat.remove();
-  res.json({ message: 'Chat deleted successfully' });
+    if (chat.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    // ✅ Delete all messages belonging to this chat
+    await Message.deleteMany({ chat: chat._id });
+
+    // ✅ Delete chat safely (use deleteOne instead of remove)
+    await Chat.deleteOne({ _id: chat._id });
+
+    res.json({ message: "Chat deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    res.status(500).json({ message: "Failed to delete chat" });
+  }
 };
