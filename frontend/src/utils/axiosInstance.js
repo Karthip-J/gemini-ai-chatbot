@@ -1,8 +1,9 @@
 import axios from "axios";
 
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-  withCredentials: true, // only needed if using cookies
+  baseURL: BASE_URL,
 });
 
 export const setAuthToken = (token) => {

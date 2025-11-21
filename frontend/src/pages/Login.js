@@ -10,16 +10,18 @@ const Login = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await axiosInstance.post("/auth/login", form);
-      localStorage.setItem("token", data.token);
-      setAuthToken(data.token);
-      navigate("/");
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
-    }
-  };
+  e.preventDefault();
+  try {
+    const { data } = await axiosInstance.post("/auth/login", form);
+    localStorage.setItem("token", data.token);
+    setAuthToken(data.token);
+    navigate("/");
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Login failed");
+  }
+};
+
 
   return (
     <div className="auth-container">

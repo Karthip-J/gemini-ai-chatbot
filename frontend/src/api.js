@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Render backend URL
-const API_URL = 'https://gemini-ai-chatbot-a6hv.onrender.com/api';
+const API_URL = 'https://gemini-ai-chatbot-xpn2.onrender.com';
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
