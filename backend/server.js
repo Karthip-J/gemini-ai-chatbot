@@ -11,12 +11,24 @@ const app = express();
 app.use(express.json());
 
 // ✅ CORS configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://gemini-ai-chatbot-2-4hdt.onrender.com'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL, // only allow your frontend domain
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type','Authorization']
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true); // allow server-to-server or curl
+    if(allowedOrigins.includes(origin)){
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  credentials: true
 }));
+
 
 // Root
 app.get("/", (req,res)=> res.send("Backend is Live!"));
