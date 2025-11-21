@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance, { setAuthToken } from "../utils/axiosInstance";
+import axiosInstance,{  setAuthToken } from "../utils/axiosInstance";
+
 import Sidebar from "../components/Sidebar";
 import ChatArea from "../components/ChatArea";
 import InputArea from "../components/InputArea";

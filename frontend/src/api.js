@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // backend URL
+// Render backend URL
+const API_URL = 'https://gemini-ai-chatbot-a6hv.onrender.com/api';
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
