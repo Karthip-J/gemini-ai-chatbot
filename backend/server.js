@@ -12,18 +12,13 @@ app.use(express.json());
 
 // ✅ CORS configuration
 app.use(cors({
-  origin: function(origin, callback){
-    if(!origin) return callback(null, true); // allow Postman / server
-    if(origin.includes('.onrender.com') || origin.includes('localhost')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'http://localhost:3000',
+    'https://gemini-ai-chatbot-2-4hdt.onrender.com'
+  ],
   credentials: true,
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
 }));
+
 
 
 // 🔥 Root route to check backend
