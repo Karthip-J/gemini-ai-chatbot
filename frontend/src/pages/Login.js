@@ -6,17 +6,23 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  // ✅ Make sure handleChange is inside the component
+  // Handle input changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // POST to backend /api/auth/login
       const { data } = await axiosInstance.post("/auth/login", form);
+
+      // Save token in localStorage
       localStorage.setItem("token", data.token);
       setAuthToken(data.token);
+
+      // Navigate to home page
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -33,14 +39,14 @@ const Login = () => {
           placeholder="Email"
           type="email"
           value={form.email}
-          onChange={handleChange}  // ✅ This now points to a defined function
+          onChange={handleChange}
         />
         <input
           name="password"
           placeholder="Password"
           type="password"
           value={form.password}
-          onChange={handleChange}  // ✅ Correct
+          onChange={handleChange}
         />
         <button type="submit">Login</button>
       </form>
