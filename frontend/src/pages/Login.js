@@ -6,23 +6,23 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
+  // ✅ Make sure handleChange is inside the component
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const { data } = await axiosInstance.post(
-      "https://gemini-ai-chatbot-xpn2.onrender.com/api/auth/login",
-      form
-    );
-    localStorage.setItem("token", data.token);
-    setAuthToken(data.token);
-    navigate("/");
-  } catch (err) {
-    console.error(err);
-    alert(err.response?.data?.message || "Login failed");
-  }
-};
-
-
+    e.preventDefault();
+    try {
+      const { data } = await axiosInstance.post("/auth/login", form);
+      localStorage.setItem("token", data.token);
+      setAuthToken(data.token);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
     <div className="auth-container">
@@ -33,14 +33,14 @@ const Login = () => {
           placeholder="Email"
           type="email"
           value={form.email}
-          onChange={handleChange}
+          onChange={handleChange}  // ✅ This now points to a defined function
         />
         <input
           name="password"
           placeholder="Password"
           type="password"
           value={form.password}
-          onChange={handleChange}
+          onChange={handleChange}  // ✅ Correct
         />
         <button type="submit">Login</button>
       </form>
