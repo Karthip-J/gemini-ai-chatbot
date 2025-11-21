@@ -8,12 +8,15 @@ const chatRoutes = require('./routes/chatRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 
 const app = express();
-
 app.use(express.json());
 
 app.use(cors({
-  origin: ['http://localhost:3000', 
-  'https://frontend-9c7bhimao-karthip-js-projects.vercel.app'],// React frontend
+  origin: [
+    'http://localhost:3000',
+    'https://frontend-9c7bhimao-karthip-js-projects.vercel.app',
+    'https://gemini-ai-chatbot-a6hv.onrender.com'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
