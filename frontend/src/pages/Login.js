@@ -6,13 +6,13 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const { data } = await axiosInstance.post("/auth/login", form);
+    const { data } = await axiosInstance.post(
+      "https://gemini-ai-chatbot-xpn2.onrender.com/api/auth/login",
+      form
+    );
     localStorage.setItem("token", data.token);
     setAuthToken(data.token);
     navigate("/");
@@ -21,6 +21,7 @@ const Login = () => {
     alert(err.response?.data?.message || "Login failed");
   }
 };
+
 
 
   return (
