@@ -16,15 +16,21 @@ const allowedOrigins = [
   'https://gemini-ai-chatbot-2-4hdt.onrender.com'
 ];
 
+// app.use(cors({
+//   origin: function(origin, callback){
+//     if(!origin) return callback(null, true); // allow server-to-server or curl
+//     if(allowedOrigins.includes(origin)){
+//       return callback(null, true);
+//     } else {
+//       return callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: function(origin, callback){
-    if(!origin) return callback(null, true); // allow server-to-server or curl
-    if(allowedOrigins.includes(origin)){
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: "*",
   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
   credentials: true
 }));
