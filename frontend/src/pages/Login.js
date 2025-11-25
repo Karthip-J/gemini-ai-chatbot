@@ -6,29 +6,22 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  // Handle input changes
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // POST to backend /api/auth/login
-      const { data } = await axiosInstance.post("/auth/login", form);
+  e.preventDefault();
+  try {
+    const { data } = await axiosInstance.post("/auth/login", form);
+    localStorage.setItem("token", data.token);
+    setAuthToken(data.token);
+    navigate("/");
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Login failed");
+  }
+};
 
-      // Save token in localStorage
-      localStorage.setItem("token", data.token);
-      setAuthToken(data.token);
-
-      // Navigate to home page
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Login failed");
-    }
-  };
 
   return (
     <div className="auth-container">
