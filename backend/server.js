@@ -45,7 +45,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error(err));
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/message', messageRoutes);
 
