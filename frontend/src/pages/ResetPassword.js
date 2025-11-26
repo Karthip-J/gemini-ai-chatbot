@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 
-
 const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
@@ -28,6 +27,7 @@ const ResetPassword = () => {
           placeholder="New password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <button type="submit">Reset Password</button>
       </form>

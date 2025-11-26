@@ -1,8 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
-
-
-import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -31,25 +29,28 @@ const Register = () => {
           placeholder="Username"
           value={form.username}
           onChange={handleChange}
+          required
         />
         <input
           name="email"
-          placeholder="Email"
           type="email"
+          placeholder="Email"
           value={form.email}
           onChange={handleChange}
+          required
         />
         <input
           name="password"
-          placeholder="Password"
           type="password"
+          placeholder="Password"
           value={form.password}
           onChange={handleChange}
+          required
         />
         <button type="submit">Register</button>
       </form>
       <p>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <Link to="/login">Login</Link>
       </p>
     </div>
   );

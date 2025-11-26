@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance,{  setAuthToken } from "../utils/axiosInstance";
+import axiosInstance, { setAuthToken } from "../utils/axiosInstance";
 
 import Sidebar from "../components/Sidebar";
 import ChatArea from "../components/ChatArea";
@@ -15,31 +15,36 @@ const Chatbot = () => {
   const [motivation, setMotivation] = useState("");
   const navigate = useNavigate();
 
-  // Fetch chats, auto-create if none exist
+  // fetch chats
   const fetchChats = useCallback(async () => {
     try {
-      let { data } = await axiosInstance.get("/chat");
-
+      const { data } = await axiosInstance.get("/api/chat"); // expects GET /api/chat
+      // backend returns array of chats
       if (!data || data.length === 0) {
-        const res = await axiosInstance.post("/chat", { title: "New Chat" });
-        data = [res.data];
+        const res = await axiosInstance.post("/api/chat", { title: "New Chat" });
+        setChats([res.data]);
+        setCurrentChat(res.data);
+        const m = await axiosInstance.get(`/api/message/${res.data._id}`);
+        setMessages(m.data || []);
+        return;
       }
-
       setChats(data);
-      // select first chat only if not already selected (prevents extra fetch on re-renders)
       if (!currentChat && data[0]) {
-        selectChat(data[0]);
+        await selectChat(data[0]);
       }
     } catch (err) {
       console.error("Error fetching chats:", err);
+      if (err.response?.status === 401) {
+        // not authenticated
+        navigate("/login");
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // fetchChats intentionally stable
+  }, [currentChat, navigate]);
 
-  // Create new chat
-  const createNewChat = async () => {
+  // create new chat
+  const createChat = async () => {
     try {
-      const { data } = await axiosInstance.post("/chat", {});
+      const { data } = await axiosInstance.post("/api/chat", { title: "New Chat" });
       setChats((prev) => [data, ...prev]);
       await selectChat(data);
     } catch (err) {
@@ -48,13 +53,13 @@ const Chatbot = () => {
     }
   };
 
-  // Delete chat
+  // delete chat
   const deleteChat = async (chatId) => {
     if (!window.confirm("Are you sure you want to delete this chat?")) return;
     try {
-      await axiosInstance.delete(`/chat/${chatId}`);
-      setChats((prev) => prev.filter((chat) => chat._id !== chatId));
-      if (currentChat && currentChat._id === chatId) {
+      await axiosInstance.delete(`/api/chat/${chatId}`);
+      setChats((prev) => prev.filter((c) => c._id !== chatId));
+      if (currentChat?._id === chatId) {
         setCurrentChat(null);
         setMessages([]);
       }
@@ -64,33 +69,33 @@ const Chatbot = () => {
     }
   };
 
-  // Select chat and fetch messages
+  // select chat
   const selectChat = async (chat) => {
     setCurrentChat(chat);
     try {
-      const { data } = await axiosInstance.get(`/message/${chat._id}`);
-      setMessages(data);
+      const { data } = await axiosInstance.get(`/api/message/${chat._id}`);
+      // assume backend returns array of messages
+      setMessages(Array.isArray(data) ? data : data.messages || []);
     } catch (err) {
       console.error("Error fetching messages:", err);
       setMessages([]);
     }
   };
 
-  // Send message
+  // send message
   const sendMessage = async (content) => {
-    if (!content.trim() || !currentChat) return;
+    if (!content || !currentChat) return;
     try {
-      const userMessage = { content, sender: "user", _id: Date.now() };
+      const userMessage = { _id: Date.now(), sender: "user", content };
       setMessages((prev) => [...prev, userMessage]);
       setIsTyping(true);
 
-      const { data } = await axiosInstance.post(
-        `/message/${currentChat._id}`,
-        { content }
-      );
+      const { data } = await axiosInstance.post(`/api/message/${currentChat._id}`, { content });
 
       setIsTyping(false);
-      setMessages((prev) => [...prev, data.botMessage]);
+      // expect backend to return bot message in data (adjust to controller response shape)
+      if (data?.botMessage) setMessages((prev) => [...prev, data.botMessage]);
+      else if (Array.isArray(data)) setMessages(data);
     } catch (err) {
       setIsTyping(false);
       console.error("Send message error:", err);
@@ -98,14 +103,12 @@ const Chatbot = () => {
     }
   };
 
-  // Welcome + motivation (no animation)
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
     if (!token) return navigate("/login");
     setAuthToken(token);
 
-    // quotes defined inside effect to avoid eslint dependency warnings
     const motivationalQuotes = [
       "Your curiosity is your greatest strength!",
       "Let’s create something amazing together ✨",
@@ -117,21 +120,14 @@ const Chatbot = () => {
     let timer;
     if (username) {
       setWelcome(`👋 Welcome back, ${username}!`);
-      const randomQuote =
-        motivationalQuotes[
-          Math.floor(Math.random() * motivationalQuotes.length)
-        ];
-      setMotivation(randomQuote);
-
+      setMotivation(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
       timer = setTimeout(() => {
         setWelcome("");
         setMotivation("");
       }, 5000);
     }
 
-    // fetch chats after setting token
     fetchChats();
-
     return () => {
       if (timer) clearTimeout(timer);
     };
@@ -141,11 +137,10 @@ const Chatbot = () => {
     <div className="chatbot-container" style={{ display: "flex", height: "100vh" }}>
       <Sidebar
         chats={chats}
-        selectChat={selectChat}
+        loadMessages={selectChat}
         currentChat={currentChat}
-        createNewChat={createNewChat}
+        createChat={createChat}
         deleteChat={deleteChat}
-        // pass logout if your Sidebar expects it:
         logout={() => {
           localStorage.removeItem("token");
           localStorage.removeItem("username");
@@ -154,23 +149,13 @@ const Chatbot = () => {
       />
 
       <div className="chat-section" style={{ flex: 1, position: "relative" }}>
-        {/* Simple welcome banner (no animation) */}
         {welcome && (
-          <div
-            style={{
-              position: "absolute",
-              top: 16,
-              left: "50%",
-              transform: "translateX(-50%)",
-              background: "linear-gradient(90deg,#222,#333)",
-              color: "#fff",
-              padding: "12px 20px",
-              borderRadius: 12,
-              zIndex: 20,
-              boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
-              textAlign: "center",
-            }}
-          >
+          <div style={{
+            position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)",
+            background: "linear-gradient(90deg,#222,#333)", color: "#fff",
+            padding: "12px 20px", borderRadius: 12, zIndex: 20, boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
+            textAlign: "center"
+          }}>
             <div style={{ fontWeight: 600 }}>{welcome}</div>
             {motivation && <div style={{ marginTop: 6, opacity: 0.9 }}>{motivation}</div>}
           </div>
