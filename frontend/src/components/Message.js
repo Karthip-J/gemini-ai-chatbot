@@ -1,28 +1,15 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import "../styles/cursor-ai.css";
 
 const Message = ({ message }) => {
   const isBot = message.sender === "bot";
 
   return (
-    <div
-      className={`message ${isBot ? "bot" : "user"}`}
-      style={{
-        alignSelf: isBot ? "flex-start" : "flex-end",
-        backgroundColor: isBot ? "#333" : "#4caf50",
-        color: "#fff",
-        padding: "10px 14px",
-        borderRadius: "12px",
-        marginBottom: "8px",
-        maxWidth: "70%",
-        wordBreak: "break-word",
-      }}
-    >
-      {isBot ? (
+    <div className={`message ${isBot ? "bot" : "user"}`}>
+      <div className="message-body">
         <ReactMarkdown>{message.content}</ReactMarkdown>
-      ) : (
-        message.content
-      )}
+      </div>
     </div>
   );
 };

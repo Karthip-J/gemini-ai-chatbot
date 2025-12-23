@@ -1,0 +1,11 @@
+const fs = require('fs');
+
+const envContent = `MONGODB_URI=mongodb+srv://karthi:karthi12@cluster0.ruwlzjp.mongodb.net/auth
+JWT_SECRET=123455
+EMAIL_USER=jkarthip@gmail.com
+EMAIL_PASS=fjpecfpgsrhamhmo
+CLIENT_URL=https://gemini-ai-chatbot-2-4hdt.onrender.com
+GEMINI_API_KEY=AIzaSyCHcN9sQqu_TOPqOk0De2oS4KH1nrSb-PI`;
+
+fs.writeFileSync('.env', envContent, 'utf8');
+console.log('.env file created successfully');

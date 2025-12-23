@@ -18,8 +18,7 @@ exports.getChats = async (req, res) => {
 exports.createChat = async (req, res) => {
   try {
     // Count chats per user
-    const chatCount = await Chat.countDocuments({ user: req.user._id });
-    const title = `Chat ${chatCount + 1}`;
+    const title = "New Chat";
 
     const chat = await Chat.create({
       title,

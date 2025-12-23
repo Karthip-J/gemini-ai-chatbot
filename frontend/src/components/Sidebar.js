@@ -1,35 +1,65 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus, MessageSquare, Trash2, LogOut, Sun, Moon, User } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+import "../styles/cursor-ai.css";
 
-const Sidebar = ({ chats, createChat, deleteChat, loadMessages, currentChat, logout }) => {
+const Sidebar = ({ chats, createChat, deleteChat, loadMessages, currentChat, logout, sidebarOpen }) => {
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username") || "User";
+
   if (!token) return null;
 
   return (
-    <div className="sidebar" style={{ width: "250px", backgroundColor: "#1f1f1f", color: "#fff", display: "flex", flexDirection: "column", padding: "10px", height: "100vh" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "10px" }}>Chats</h2>
+    <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <div className="sidebar-header">
+        <button onClick={createChat} className="new-chat-btn">
+          <Plus size={16} />
+          <span>New Chat</span>
+        </button>
+      </div>
 
-      <button onClick={createChat} style={{ margin: "10px 0", padding: "8px", backgroundColor: "#3a3a3a", color: "#fff", border: "none", cursor: "pointer", borderRadius: "4px" }}>
-        + New Chat
-      </button>
-
-      <div className="chat-list" style={{ flex: 1, overflowY: "auto" }}>
+      <div className="chat-list">
         {chats && chats.length > 0 ? (
           chats.map((chat) => (
-            <div key={chat._id} onClick={() => loadMessages(chat)} style={{ padding: "10px", marginBottom: "6px", cursor: "pointer", backgroundColor: currentChat?._id === chat._id ? "#3a3a3a" : "transparent", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ maxWidth: "150px", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{chat.title || "New Chat"}</span>
-              <button onClick={(e) => { e.stopPropagation(); deleteChat(chat._id); }} style={{ background: "#ff3b3b", border: "none", color: "#fff", borderRadius: "3px", cursor: "pointer", padding: "2px 6px", fontSize: "12px" }}>X</button>
+            <div
+              key={chat._id}
+              className={`chat-item ${currentChat?._id === chat._id ? 'active' : ''}`}
+              onClick={() => loadMessages(chat)}
+            >
+              <MessageSquare size={16} />
+              <span className="chat-item-title">{chat.title || "New Chat"}</span>
+              <button
+                onClick={(e) => { e.stopPropagation(); deleteChat(chat._id); }}
+                className="delete-chat-btn"
+              >
+                <Trash2 size={14} />
+              </button>
             </div>
           ))
         ) : (
-          <p style={{ textAlign: "center", marginTop: "20px" }}>No chats available.<br/>Create one!</p>
+          <div style={{ padding: "20px", textAlign: "center", color: "var(--text-secondary)", fontSize: "14px" }}>
+            No chats yet.
+          </div>
         )}
       </div>
 
-      <button onClick={logout} style={{ marginTop: "10px", padding: "10px", backgroundColor: "#ff4d4d", color: "#fff", border: "none", cursor: "pointer", borderRadius: "4px" }}>
-        Logout
-      </button>
+      <div className="sidebar-footer">
+        <button className="footer-item" onClick={toggleTheme}>
+          {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+          <span>{theme === "light" ? "Dark mode" : "Light mode"}</span>
+        </button>
+        <div className="footer-item">
+          <User size={16} />
+          <span>{username}</span>
+        </div>
+        <button className="footer-item" onClick={logout}>
+          <LogOut size={16} />
+          <span>Log out</span>
+        </button>
+      </div>
     </div>
   );
 };

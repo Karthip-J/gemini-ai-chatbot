@@ -24,16 +24,16 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error(err));
 
 // API routes
-app.use('/auth', authRoutes);
+console.log('Loading auth routes...');
+app.use('/api/auth', authRoutes);
+console.log('Loading chat routes...');
 app.use('/api/chat', chatRoutes);
+console.log('Loading message routes...');
 app.use('/api/message', messageRoutes);
+console.log('All routes loaded');
 
 // Serve frontend build (SPA)
 app.use(express.static(path.join(__dirname, '../frontend/build')));
-// FIX - add leading slash
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-});
 
 
 // Error middleware

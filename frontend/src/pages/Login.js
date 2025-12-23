@@ -23,33 +23,35 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-      <p>
-        Forgot password? <Link to="/forgot-password">Reset</Link>
-      </p>
-      <p>
-        Don’t have an account? <Link to="/register">Register</Link>
-      </p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h2>Welcome back</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email address"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">Continue</button>
+        </form>
+        <p>
+          Forgot password? <Link to="/forgot-password">Reset</Link>
+        </p>
+        <p>
+          Don’t have an account? <Link to="/register">Sign up</Link>
+        </p>
+      </div>
     </div>
   );
 };

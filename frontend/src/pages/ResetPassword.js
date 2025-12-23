@@ -19,18 +19,20 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Reset Password</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          placeholder="New password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Reset Password</button>
-      </form>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h2>Set new password</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            placeholder="New password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Reset Password</button>
+        </form>
+      </div>
     </div>
   );
 };

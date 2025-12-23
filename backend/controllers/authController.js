@@ -1,4 +1,4 @@
-const User = require('../models/User'); // ✅ match exact folder name
+const User = require('../models/User'); 
 
 
 const jwt = require('jsonwebtoken');

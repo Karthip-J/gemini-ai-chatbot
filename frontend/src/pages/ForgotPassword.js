@@ -18,18 +18,20 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Forgot Password</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <button type="submit">Send Reset Link</button>
-      </form>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h2>Reset your password</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <button type="submit">Send Reset Link</button>
+        </form>
+      </div>
     </div>
   );
 };

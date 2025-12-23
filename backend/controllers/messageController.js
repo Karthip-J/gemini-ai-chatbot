@@ -32,7 +32,7 @@ exports.sendMessage = async (req, res) => {
       .map((msg) => `${msg.sender === 'user' ? 'User' : 'AI'}: ${msg.content}`)
       .join('\n');
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const prompt = `${context}\nUser: ${content}\nAI:`;
 
     const result = await model.generateContent(prompt);
@@ -44,10 +44,29 @@ exports.sendMessage = async (req, res) => {
       chat: chatId,
     });
 
+    // Generate title if it's the first message or current title is generic
+    const isGenericTitle = !chat.title || chat.title === 'New Chat' || chat.title.startsWith('Chat ');
+
+    if (chat.messages.length === 0 || isGenericTitle) {
+      try {
+        console.log(`📝 Generating title for chat ${chatId}. Current messages: ${chat.messages.length}`);
+        const titlePrompt = `Generate a very concise, professional chat title (max 5 words) that captures the core topic of this message: "${content}". Return ONLY the title text, no quotes or punctuation.`;
+        const titleResult = await model.generateContent(titlePrompt);
+        const generatedTitle = titleResult.response.text().trim().replace(/^"(.*)"$/, '$1');
+
+        if (generatedTitle && generatedTitle.length > 0) {
+          console.log(`✅ Generated title: "${generatedTitle}"`);
+          chat.title = generatedTitle;
+        }
+      } catch (titleError) {
+        console.error('❌ Title generation error:', titleError);
+      }
+    }
+
     chat.messages.push(userMessage._id, botMessage._id);
     await chat.save();
 
-    res.status(200).json({ userMessage, botMessage });
+    res.status(200).json({ userMessage, botMessage, chatTitle: chat.title });
   } catch (error) {
     console.error('Gemini API error:', error);
     res.status(500).json({
